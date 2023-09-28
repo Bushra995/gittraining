@@ -45,11 +45,8 @@ pipeline {
         }
         success {
             script {
-                // Get the Git commit hash for the latest commit
-                def gitCommit = sh(script: 'git rev-parse HEAD', returnStatus: true).trim()
-                
-                // Get the author's email using 'git show' command
-                def authorEmail = sh(script: "git show --format='%ae' -s ${gitCommit}", returnStatus: true).trim()
+                // Get the author's email using 'git log' command
+                def authorEmail = sh(script: "git log -1 --pretty=format:%ae", returnStatus: true).trim()
                 
                 // Send an email notification on success to the author's email
                 emailext subject: "Pipeline Successful for ${params.ENVIRONMENT} environment",
@@ -59,11 +56,8 @@ pipeline {
         }
         failure {
             script {
-                // Get the Git commit hash for the latest commit
-                def gitCommit = sh(script: 'git rev-parse HEAD', returnStatus: true).trim()
-                
-                // Get the author's email using 'git show' command
-                def authorEmail = sh(script: "git show --format='%ae' -s ${gitCommit}", returnStatus: true).trim()
+                // Get the author's email using 'git log' command
+                def authorEmail = sh(script: "git log -1 --pretty=format:%ae", returnStatus: true).trim()
                 
                 // Send an email notification on failure to the author's email
                 emailext subject: "Pipeline Failed for ${params.ENVIRONMENT} environment",
