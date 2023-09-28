@@ -1,4 +1,4 @@
-def githubToken = 'YOUR_GITHUB_TOKEN' // Replace with your GitHub PAT
+def githubToken = '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' // Replace with your GitHub PAT
 
 pipeline {
     agent any
