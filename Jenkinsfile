@@ -77,7 +77,7 @@ pipeline {
                 }
                 
                 emailext subject: "Pipeline Successful for ${params.ENVIRONMENT} environment",
-                          body: "The pipeline for ${params.ENVIRONMENT} environment has completed successfully.",
+                          body: "The pipeine for ${params.ENVIRONMENT} environment has completed successfully.",
                           to: recipientEmail
             }
         }
