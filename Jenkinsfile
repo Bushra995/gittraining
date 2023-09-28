@@ -8,52 +8,56 @@ pipeline {
             description: 'Select the deployment environment'
         )
     }
-    
+
     stages {
         stage('Build') {
             steps {
-                // Add your build steps here
                 echo "Building for ${params.ENVIRONMENT} environment"
+                // Add your build steps here
             }
         }
 
         stage('Deploy') {
             when {
                 expression {
-                    // You can use the 'params.ENVIRONMENT' variable to make decisions in your pipeline
                     return params.ENVIRONMENT == 'qa' || params.ENVIRONMENT == 'prod'
                 }
             }
             steps {
-                // Add your deployment steps here
                 echo "Deploying to ${params.ENVIRONMENT} environment"
+                // Add your deployment steps here
             }
         }
 
         stage('Test') {
             steps {
-                // Add your testing steps here
                 echo "Testing in ${params.ENVIRONMENT} environment"
+                // Add your testing steps here
             }
         }
     }
-    
+
     post {
         always {
-            // Add any cleanup or post-build steps here
             echo "Pipeline completed for ${params.ENVIRONMENT} environment"
         }
         success {
-            // Send an email notification on success to the GitHub user who committed the code
-            emailext subject: "Pipeline Successful for ${params.ENVIRONMENT} environment",
-                      body: "The pipeline for ${params.ENVIRONMENT} environment has completed successfully.",
-                      to: "${currentBuild.changeSets[0].authorEmail}"
+            script {
+                def changeSet = currentBuild.rawBuild.changeSets.iterator().next()
+                def authorEmail = changeSet.items[0].authorEmail
+                emailext subject: "Pipeline Successful for ${params.ENVIRONMENT} environment",
+                          body: "The pipeline for ${params.ENVIRONMENT} environment has completed successfully.",
+                          to: authorEmail
+            }
         }
         failure {
-            // Send an email notification on failure to the GitHub user who committed the code
-            emailext subject: "Pipeline Failed for ${params.ENVIRONMENT} environment",
-                      body: "The pipeline for ${params.ENVIRONMENT} environment has failed. Please investigate.",
-                      to: "${currentBuild.changeSets[0].authorEmail}"
+            script {
+                def changeSet = currentBuild.rawBuild.changeSets.iterator().next()
+                def authorEmail = changeSet.items[0].authorEmail
+                emailext subject: "Pipeline Failed for ${params.ENVIRONMENT} environment",
+                          body: "The pipeline for ${params.ENVIRONMENT} environment has failed. Please investigate.",
+                          to: authorEmail
+            }
         }
     }
 }
