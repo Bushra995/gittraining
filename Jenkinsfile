@@ -53,9 +53,7 @@ pipeline {
                     if (params.CONTINUE) {
                         echo "Continuing with the next step..."
                         // Add your steps here
-                    } else {
-                        error("Pipeline aborted by the user.")
-                    }
+                    } 
                 }
             }
         }
