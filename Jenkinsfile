@@ -53,7 +53,24 @@ pipeline {
                 // Add your testing steps here
                 echo "Testing in ${params.ENVIRONMENT} environment"
             }
+
+        stage('Interactive input') {
+            steps {
+                input(message: 'Proceed with the next step?', submitter: 'user', parameters: [
+                    booleanParam(defaultValue: true, description: 'Do you want to continue?', name: 'CONTINUE')
+                ])
+                script {
+                    if (params.CONTINUE) {
+                        echo "Continuing with the next step..."
+                        // Add your steps here
+                    } else {
+                        error("Pipeline aborted by the user.")
+                    }
+                }
+            }
         }
+            
+ }
 
          stage('Create build output') {
             steps {
@@ -81,17 +98,17 @@ pipeline {
             // Add any cleanup or post-build steps here
             echo "Pipeline completed for ${params.ENVIRONMENT} environment"
         }
-        // success {
-        //     // Send an email notification on success to the author's email
-        //     emailext subject: "Pipeline Successful for ${params.ENVIRONMENT} environment",
-        //               body: "The pipeline for ${params.ENVIRONMENT} environment has completed successfully.",
-        //               to: env.AUTHOR_EMAIL
-        // }
-        // failure {
-        //     // Send an email notification on failure to the author's email
-        //     emailext subject: "Pipeline Failed for ${params.ENVIRONMENT} environment",
-        //               body: "The pipeline for ${params.ENVIRONMENT} environment has failed. Please investigate.",
-        //               to: env.AUTHOR_EMAIL
-        // }
+        success {
+            // Send an email notification on success to the author's email
+            emailext subject: "Pipeline Successful for ${params.ENVIRONMENT} environment",
+                      body: "The pipeline for ${params.ENVIRONMENT} environment has completed successfully.",
+                      to: env.AUTHOR_EMAIL
+        }
+        failure {
+            // Send an email notification on failure to the author's email
+            emailext subject: "Pipeline Failed for ${params.ENVIRONMENT} environment",
+                      body: "The pipeline for ${params.ENVIRONMENT} environment has failed. Please investigate.",
+                      to: env.AUTHOR_EMAIL
+        }
     }
 }
