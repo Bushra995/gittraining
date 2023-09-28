@@ -17,6 +17,18 @@ pipeline {
             }
         }
 
+        stage('Retrieve Author Email') {
+            steps {
+                script {
+                    // Get the author's email using 'git log' command
+                    def authorEmail = sh(script: 'git log -1 --pretty=format:%ae', returnStdout: true).trim()
+                    
+                    // Print the author's email to the console
+                    echo "Author's Email: ${authorEmail}"
+                }
+            }
+        }
+
         stage('Deploy') {
             when {
                 expression {
@@ -44,26 +56,16 @@ pipeline {
             echo "Pipeline completed for ${params.ENVIRONMENT} environment"
         }
         success {
-            script {
-                // Get the author's email using 'git log' command
-                def authorEmail = sh(script: "git log -1 --pretty=format:%ae", returnStatus: true).trim()
-                
-                // Send an email notification on success to the author's email
-                emailext subject: "Pipeline Successful for ${params.ENVIRONMENT} environment",
-                          body: "The pipeline for ${params.ENVIRONMENT} environment has completed successfully.",
-                          to: "${authorEmail}" // Send email to the author's email address
-            }
+            // Send an email notification on success to the GitHub user who committed the code
+            emailext subject: "Pipeline Successful for ${params.ENVIRONMENT} environment",
+                      body: "The pipeline for ${params.ENVIRONMENT} environment has completed successfully.",
+                      to: "${currentBuild.changeSets[0].authorEmail}"
         }
         failure {
-            script {
-                // Get the author's email using 'git log' command
-                def authorEmail = sh(script: "git log -1 --pretty=format:%ae", returnStatus: true).trim()
-                
-                // Send an email notification on failure to the author's email
-                emailext subject: "Pipeline Failed for ${params.ENVIRONMENT} environment",
-                          body: "The pipeline for ${params.ENVIRONMENT} environment has failed. Please investigate.",
-                          to: "${authorEmail}" // Send email to the author's email address
-            }
+            // Send an email notification on failure to the GitHub user who committed the code
+            emailext subject: "Pipeline Failed for ${params.ENVIRONMENT} environment",
+                      body: "The pipeline for ${params.ENVIRONMENT} environment has failed. Please investigate.",
+                      to: "${currentBuild.changeSets[0].authorEmail}"
         }
     }
 }
