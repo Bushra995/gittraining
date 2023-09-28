@@ -15,7 +15,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout source code from Git
-                git branch: 'main', url: 'https://github.com/your/repo.git'
+                git branch: 'main', url: ' https://github.com/Bushra995/gittraining.git'
             }
         }
 
