@@ -66,7 +66,7 @@ pipeline {
         success {
             emailext subject: "Pipeline Successful for ${params.ENVIRONMENT} environment",
                       body: "The pipeline for ${params.ENVIRONMENT} environment has completed successfully.",
-                      to: env.AUTHOR_EMAIL
+                      to: bushraf995@gmail.com
         }
         failure {
             emailext subject: "Pipeline Failed for ${params.ENVIRONMENT} environment",
